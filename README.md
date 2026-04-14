@@ -83,7 +83,7 @@ A batch size of 1000 is an industry-standard "sweet spot." It is large enough to
     cat ./output/sql\_batches/data.sql | docker exec -i my-postgres-db psql -U postgres
 
 ## Project Structure
-
+```
 ├── output/sql_batches/ # Generated .sql files
 ├── src/
 │   ├── core/           # Business logic
@@ -100,6 +100,7 @@ A batch size of 1000 is an industry-standard "sweet spot." It is large enough to
 ├── package.json        # Dependencies and scripts
 ├── README.md           # Documentation
 └── tsconfig.json       # TypeScript compiler configuration
+```
 
 ## License
 
