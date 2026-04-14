@@ -86,20 +86,20 @@ A batch size of 1000 is an industry-standard "sweet spot." It is large enough to
 ```
 ├── output/sql_batches/ # Generated .sql files
 ├── src/
-│   ├── core/           # Business logic
-│   │   ├── StateMachine.ts  # Handles NEM12 record sequencing
-│   │   └── Transformer.ts   # Validates and converts data to SQL objects
-│   ├── types/          # TypeScript definitions
-│   │   └── nem12.types.ts   # Interfaces for NMI, Readings, and State
-│   ├── utils/          # Infrastructure logic
+│   ├── core/                  # Business logic
+│   │   ├── StateMachine.ts    # Handles NEM12 record sequencing
+│   │   └── Transformer.ts     # Validates and converts data to SQL objects
+│   ├── types/                 # TypeScript definitions
+│   │   └── nem12.types.ts     # Interfaces for NMI, Readings, and State
+│   ├── utils/                 # Infrastructure logic
 │   │   └── streamProcessor.ts # Handles file streaming and batching
-│   └── index.ts        # CLI Entry point and argument parsing
-├── .editorconfig       # Consistent IDE spacing/formatting
-├── .eslintrc.js        # Linting rules for code quality
-├── .gitignore          # Excludes node_modules, output, and CSVs from Git
-├── package.json        # Dependencies and scripts
-├── README.md           # Documentation
-└── tsconfig.json       # TypeScript compiler configuration
+│   └── index.ts               # CLI Entry point and argument parsing
+├── .editorconfig              # Consistent IDE spacing/formatting
+├── .eslintrc.js               # Linting rules for code quality
+├── .gitignore                 # Excludes node_modules, output, and CSVs from Git
+├── package.json               # Dependencies and scripts
+├── README.md                  # Documentation
+└── tsconfig.json              # TypeScript compiler configuration
 ```
 
 ## License
