@@ -18,7 +18,7 @@ lerna-debug.log*
 # Build outputs
 dist/
 build/
-out/
+otuput/
 
 # OS metadata
 .DS_Store
