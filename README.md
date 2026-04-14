@@ -101,6 +101,33 @@ A batch size of 1000 is an industry-standard "sweet spot." It is large enough to
 ├── README.md                  # Documentation
 └── tsconfig.json              # TypeScript compiler configuration
 ```
+---
+## Assessment Write Up
+
+### Q1. What is the rationale for the technologies you have decided to use?
+* **Node.js & TypeScript:** Chosen for the balance of development speed and type safety. TypeScript’s static analysis is critical for handling NEM12 files, where a single misaligned index in a CSV row could result in massive data corruption. Strict typing ensures that data flows through the pipeline in a predictable shape.
+* **Node.js Streams (`fs` & `readline`):** Standard file reading (`fs.readFile`) loads the entire file into RAM, which is a "ticking time bomb" for large datasets. Using native Streams ensures a constant, low-memory footprint (O(1) complexity), allowing the utility to process multi-gigabyte files on a standard machine.
+* **ESLint & Prettier:** Integrated to enforce industry-standard "Clean Code" principles. They automate code quality, ensuring the codebase is professional, maintainable, and free of common logical pitfalls like unused variables or inconsistent formatting.
+* **Ts-Node:** Used in development to provide a seamless "JIT" (Just-In-Time) execution environment. This removes the friction of a manual build step during the iterative coding process while maintaining full TypeScript support.
+
+### Q2. What would you have done differently if you had more time? 
+* **High-Performance Concurrency:** Implement a Worker Thread pool or Producer-Consumer pattern to handle transformation and validation logic in parallel, moving beyond single-threaded CPU constraints.
+* **Streamed Database Integration:** Direct "Database Sinks" using `node-postgres` to eliminate intermediate disk I/O and achieve true end-to-end atomicity from file to database.
+* **Resilience & Checkpointing:** Tracking "bytes read" in a lightweight state store (like Redis) to allow the parser to resume exactly where it left off after a crash.
+* **Advanced Error Correction:** Implementing a **Dead Letter Queue (DLQ)** for malformed records, allowing the utility to continue processing valid data while logging errors for manual review.
+* **Cloud-Native Deployment:** Architecting the utility as an Azure Function or AWS Lambda with trigger-based workflows (e.g., on-upload to Blob Storage).
+* **Fuzz & Integration Testing:** Expanding the test suite with randomized data to ensure the state machine never enters an undefined state, and utilizing Dockerized Postgres in CI/CD for full integration verification.
+
+### Q3. What is the rationale for the design choices that you have made? 
+* **State Machine Architecture:** NEM12 files are inherently stateful (a "300" record only makes sense in the context of the preceding "200" record). A State Machine was designed to track the "Active NMI" and "Interval Length." This prevents "orphaned data" and allows the parser to validate records based on their parent metadata before any SQL is generated.
+* **Transactional Batching Strategy:** To handle the high-velocity nature of energy data, the system implements a batched SQL injection design:
+    * **Reduced Network & I/O Overhead:** Instead of a 1:1 ratio of rows to SQL commands, the design groups multiple records into single multi-row `INSERT` statements. This minimizes the "round-trip" latency between the application and the database.
+    * **Atomic BEGIN/COMMIT Blocks:** The output is wrapped in database transactions. This ensures an "all-or-nothing" ingestion, preventing "zombie data" (partial imports) from corrupting the database state if the process is interrupted.
+    * **Tunable Throughput:** By exposing the `batch-size` as a CLI parameter, the design allows users to optimize the utility for different environments—choosing smaller batches for cloud functions or larger batches for local migrations.
+* **Separation of Concerns (SoC):** The project structure strictly separates **Core Logic** (The State Machine and Transformer) from **Infrastructure** (Stream Processing and File I/O). This makes the code highly testable; the math logic can be unit-tested in isolation from the file system.
+* **Strategy for Final Flushes:** The design includes a "Final Flush" mechanism to ensure that if the file ends on a partial batch (e.g., 13 records when the batch size is 1000), those records are still captured and committed correctly, ensuring no data loss.
+
+---
 
 ## License
 
